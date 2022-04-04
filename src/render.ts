@@ -1,5 +1,5 @@
 import { State } from './state.js';
-import { key2pos, createEl, posToTranslate as posToTranslateFromBounds, translate } from './util.js';
+import { key2pos, createEl, posToTranslate as posToTranslateFromBounds, translate, x} from './util.js';
 import { whitePov } from './board.js';
 import { AnimCurrent, AnimVectors, AnimVector, AnimFadings } from './anim.js';
 import { DragCurrent } from './drag.js';
@@ -186,7 +186,7 @@ export function updateBounds(s: State): void {
   const bounds = s.dom.elements.wrap.getBoundingClientRect();
   const container = s.dom.elements.container;
   const ratio = bounds.height / bounds.width;
-  const width = (Math.floor((bounds.width * window.devicePixelRatio) / 8) * 8) / window.devicePixelRatio;
+  const width = (Math.floor((bounds.width * window.devicePixelRatio) / x) * x) / window.devicePixelRatio;
   const height = width * ratio;
   container.style.width = width + 'px';
   container.style.height = height + 'px';
@@ -227,7 +227,7 @@ function computeSquareClasses(s: State): SquareClasses {
     for (const k of s.lastMove) {
       addSquare(squares, k, 'last-move');
     }
-  if (s.check && s.highlight.check) addSquare(squares, s.check, 'check');
+  //if (s.check && s.highlight.check) addSquare(squares, s.check, 'check');
   if (s.selected) {
     addSquare(squares, s.selected, 'selected');
     if (s.movable.showDests) {
@@ -236,19 +236,8 @@ function computeSquareClasses(s: State): SquareClasses {
         for (const k of dests) {
           addSquare(squares, k, 'move-dest' + (s.pieces.has(k) ? ' oc' : ''));
         }
-      const pDests = s.premovable.dests;
-      if (pDests)
-        for (const k of pDests) {
-          addSquare(squares, k, 'premove-dest' + (s.pieces.has(k) ? ' oc' : ''));
-        }
     }
   }
-  const premove = s.premovable.current;
-  if (premove) for (const k of premove) addSquare(squares, k, 'current-premove');
-  else if (s.predroppable.current) addSquare(squares, s.predroppable.current.key, 'current-premove');
-
-  const o = s.exploding;
-  if (o) for (const k of o.keys) addSquare(squares, k, 'exploding' + o.stage);
 
   return squares;
 }
@@ -263,4 +252,4 @@ function appendValue<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   const arr = map.get(key);
   if (arr) arr.push(value);
   else map.set(key, [value]);
-}
+} 

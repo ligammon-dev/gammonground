@@ -1,7 +1,6 @@
 import { State } from './state.js';
 import * as board from './board.js';
 import * as util from './util.js';
-import { clear as drawClear } from './draw.js';
 import * as cg from './types.js';
 import { anim } from './anim.js';
 
@@ -28,8 +27,6 @@ export function start(s: State, e: cg.MouchEvent): void {
   if (!orig) return;
   const piece = s.pieces.get(orig);
   const previouslySelected = s.selected;
-  if (!previouslySelected && s.drawable.enabled && (s.drawable.eraseOnClick || !piece || piece.color !== s.turnColor))
-    drawClear(s);
   // Prevent touch scroll and create no corresponding mouse event, if there
   // is an intent to interact with the board.
   if (
@@ -37,8 +34,7 @@ export function start(s: State, e: cg.MouchEvent): void {
     (!e.touches || s.blockTouchScroll || piece || previouslySelected || pieceCloseTo(s, position))
   )
     e.preventDefault();
-  const hadPremove = !!s.premovable.current;
-  const hadPredrop = !!s.predroppable.current;
+
   s.stats.ctrlKey = e.ctrlKey;
   if (s.selected && board.canMove(s, s.selected, orig)) {
     anim(state => board.selectSquare(state, orig), s);
@@ -70,8 +66,6 @@ export function start(s: State, e: cg.MouchEvent): void {
     }
     processDrag(s);
   } else {
-    if (hadPremove) board.unsetPremove(s);
-    if (hadPredrop) board.unsetPredrop(s);
   }
   s.dom.redraw();
 }
@@ -79,7 +73,7 @@ export function start(s: State, e: cg.MouchEvent): void {
 function pieceCloseTo(s: State, pos: cg.NumberPair): boolean {
   const asWhite = board.whitePov(s),
     bounds = s.dom.bounds(),
-    radiusSq = Math.pow(bounds.width / 8, 2);
+    radiusSq = Math.pow(bounds.width / util.x, 2);
   for (const key of s.pieces.keys()) {
     const center = util.computeSquareCenter(key, asWhite, bounds);
     if (util.distanceSq(center, pos) <= radiusSq) return true;
@@ -162,8 +156,6 @@ export function end(s: State, e: cg.MouchEvent): void {
     s.draggable.current = undefined;
     return;
   }
-  board.unsetPremove(s);
-  board.unsetPredrop(s);
   // touchend has no position; so use the last touchmove position instead
   const eventPos = util.eventPosition(e) || cur.pos;
   const dest = board.getKeyAtDomPos(eventPos, board.whitePov(s), s.dom.bounds());

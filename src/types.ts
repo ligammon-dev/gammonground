@@ -37,9 +37,6 @@ export interface Elements {
   wrap: HTMLElement;
   container: HTMLElement;
   ghost?: HTMLElement;
-  svg?: SVGElement;
-  customSvg?: SVGElement;
-  autoPieces?: HTMLElement;
 }
 export interface Dom {
   elements: Elements;
@@ -49,20 +46,11 @@ export interface Dom {
   unbind?: Unbind;
   destroyed?: boolean;
 }
-export interface Exploding {
-  stage: number;
-  keys: readonly Key[];
-}
 
 export interface MoveMetadata {
-  premove: boolean;
   ctrlKey?: boolean;
   holdTime?: number;
   captured?: Piece;
-  predrop?: boolean;
-}
-export interface SetPremoveMetadata {
-  ctrlKey?: boolean;
 }
 
 export type MouchEvent = Event & Partial<MouseEvent & TouchEvent>;
@@ -99,7 +87,5 @@ export type Milliseconds = number;
 export type KHz = number;
 
 export const colors = ['white', 'black'] as const;
-export const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
-export const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
-
-export type RanksPosition = 'left' | 'right';
+export const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'] as const;
+export const ranks = ['1', '2', '3', '4', '5', '6', '7', '8','9'] as const;

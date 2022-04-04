@@ -4,8 +4,6 @@ import { write as fenWrite } from './fen.js';
 import { Config, configure, applyAnimation } from './config.js';
 import { anim, render } from './anim.js';
 import { cancel as dragCancel, dragNewPiece } from './drag.js';
-import { DrawShape } from './draw.js';
-import { explosion } from './explosion.js';
 import * as cg from './types.js';
 
 export interface Api {
@@ -35,32 +33,11 @@ export interface Api {
   // put a new piece on the board
   newPiece(piece: cg.Piece, key: cg.Key): void;
 
-  // play the current premove, if any; returns true if premove was played
-  playPremove(): boolean;
-
-  // cancel the current premove, if any
-  cancelPremove(): void;
-
-  // play the current predrop, if any; returns true if premove was played
-  playPredrop(validate: (drop: cg.Drop) => boolean): boolean;
-
-  // cancel the current predrop, if any
-  cancelPredrop(): void;
-
   // cancel the current move being made
   cancelMove(): void;
 
   // cancel current move and prevent further ones
   stop(): void;
-
-  // make squares explode (atomic chess)
-  explode(keys: cg.Key[]): void;
-
-  // programmatically draw user shapes
-  setShapes(shapes: DrawShape[]): void;
-
-  // programmatically draw auto shapes
-  setAutoShapes(shapes: DrawShape[]): void;
 
   // square name at this DOM position (like "e4")
   getKeyAtDomPos(pos: cg.NumberPair): cg.Key | undefined;
@@ -116,32 +93,6 @@ export function start(state: State, redrawAll: cg.Redraw): Api {
       anim(state => board.baseNewPiece(state, piece, key), state);
     },
 
-    playPremove(): boolean {
-      if (state.premovable.current) {
-        if (anim(board.playPremove, state)) return true;
-        // if the premove couldn't be played, redraw to clear it up
-        state.dom.redraw();
-      }
-      return false;
-    },
-
-    playPredrop(validate): boolean {
-      if (state.predroppable.current) {
-        const result = board.playPredrop(state, validate);
-        state.dom.redraw();
-        return result;
-      }
-      return false;
-    },
-
-    cancelPremove(): void {
-      render(board.unsetPremove, state);
-    },
-
-    cancelPredrop(): void {
-      render(board.unsetPredrop, state);
-    },
-
     cancelMove(): void {
       render(state => {
         board.cancelMove(state);
@@ -154,18 +105,6 @@ export function start(state: State, redrawAll: cg.Redraw): Api {
         board.stop(state);
         dragCancel(state);
       }, state);
-    },
-
-    explode(keys: cg.Key[]): void {
-      explosion(state, keys);
-    },
-
-    setAutoShapes(shapes: DrawShape[]): void {
-      render(state => (state.drawable.autoShapes = shapes), state);
-    },
-
-    setShapes(shapes: DrawShape[]): void {
-      render(state => (state.drawable.shapes = shapes), state);
     },
 
     getKeyAtDomPos(pos): cg.Key | undefined {

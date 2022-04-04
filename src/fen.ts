@@ -1,8 +1,7 @@
 import { pos2key, invRanks } from './util.js';
 import * as cg from './types.js';
-
-export const initial: cg.FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
-
+//export const initial: cg.FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+export const initial: cg.FEN = 'ppp2ppp/ppp2ppp/8/8/8/8/PPP2PPP/PPP2PPP w - - 0 1';
 const roles: { [letter: string]: cg.Role } = {
   p: 'pawn',
   r: 'rook',

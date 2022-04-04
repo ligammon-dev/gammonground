@@ -1,8 +1,8 @@
 import { State } from './state.js';
 import * as drag from './drag.js';
-import * as draw from './draw.js';
+//import * as draw from './draw.js';
 import { drop } from './drop.js';
-import { isRightButton } from './util.js';
+//import { isRightButton } from './util.js';
 import * as cg from './types.js';
 
 type MouchBind = (e: cg.MouchEvent) => void;
@@ -25,7 +25,7 @@ export function bindBoard(s: State, onResize: () => void): void {
     passive: false,
   });
 
-  if (s.disableContextMenu || s.drawable.enabled) {
+  if (s.disableContextMenu) {
     boardEl.addEventListener('contextmenu', e => e.preventDefault());
   }
 }
@@ -39,8 +39,8 @@ export function bindDocument(s: State, onResize: () => void): cg.Unbind {
   if (!('ResizeObserver' in window)) unbinds.push(unbindable(document.body, 'chessground.resize', onResize));
 
   if (!s.viewOnly) {
-    const onmove = dragOrDraw(s, drag.move, draw.move);
-    const onend = dragOrDraw(s, drag.end, draw.end);
+    const onmove = dragOrDraw(s, drag.move);
+    const onend = dragOrDraw(s, drag.end);
 
     for (const ev of ['touchmove', 'mousemove']) unbinds.push(unbindable(document, ev, onmove as EventListener));
     for (const ev of ['touchend', 'mouseup']) unbinds.push(unbindable(document, ev, onend as EventListener));
@@ -65,21 +65,15 @@ function unbindable(
 
 function startDragOrDraw(s: State): MouchBind {
   return e => {
-    if (s.draggable.current) drag.cancel(s);
-    else if (s.drawable.current) draw.cancel(s);
-    else if (e.shiftKey || isRightButton(e)) {
-      if (s.drawable.enabled) draw.start(s, e);
-    } else if (!s.viewOnly) {
+  if (!s.viewOnly) {
       if (s.dropmode.active) drop(s, e);
       else drag.start(s, e);
     }
   };
 }
 
-function dragOrDraw(s: State, withDrag: StateMouchBind, withDraw: StateMouchBind): MouchBind {
+function dragOrDraw(s: State, withDrag: StateMouchBind): MouchBind {
   return e => {
-    if (s.drawable.current) {
-      if (s.drawable.enabled) withDraw(s, e);
-    } else if (!s.viewOnly) withDrag(s, e);
+    if (!s.viewOnly) withDrag(s, e);
   };
 }

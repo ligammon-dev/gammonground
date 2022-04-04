@@ -1,7 +1,6 @@
 import { HeadlessState } from './state.js';
 import { setCheck, setSelected } from './board.js';
 import { read as fenRead } from './fen.js';
-import { DrawShape, DrawBrushes } from './draw.js';
 import * as cg from './types.js';
 
 export interface Config {
@@ -11,8 +10,7 @@ export interface Config {
   check?: cg.Color | boolean; // true for current color, false to unset
   lastMove?: cg.Key[]; // squares part of the last move ["c3", "c4"]
   selected?: cg.Key; // square currently selected "a1"
-  coordinates?: boolean; // include coords attributes
-  autoCastle?: boolean; // immediately complete the castle by moving the rook after king move
+  //coordinates?: boolean; // include coords attributes
   viewOnly?: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu?: boolean; // because who needs a context menu on a chessboard
   addPieceZIndex?: boolean; // adds z-index values to pieces (for 3D)
@@ -36,24 +34,6 @@ export interface Config {
       after?: (orig: cg.Key, dest: cg.Key, metadata: cg.MoveMetadata) => void; // called after the move has been played
       afterNewPiece?: (role: cg.Role, key: cg.Key, metadata: cg.MoveMetadata) => void; // called after a new piece is dropped on the board
     };
-    rookCastle?: boolean; // castle by moving the king to the rook
-  };
-  premovable?: {
-    enabled?: boolean; // allow premoves for color that can not move
-    showDests?: boolean; // whether to add the premove-dest class on squares
-    castle?: boolean; // whether to allow king castle premoves
-    dests?: cg.Key[]; // premove destinations for the current selection
-    events?: {
-      set?: (orig: cg.Key, dest: cg.Key, metadata?: cg.SetPremoveMetadata) => void; // called after the premove has been set
-      unset?: () => void; // called after the premove has been unset
-    };
-  };
-  predroppable?: {
-    enabled?: boolean; // allow predrops for color that can not move
-    events?: {
-      set?: (role: cg.Role, key: cg.Key) => void; // called after the predrop has been set
-      unset?: () => void; // called after the predrop has been unset
-    };
   };
   draggable?: {
     enabled?: boolean; // allow moves & premoves to use drag'n drop
@@ -75,18 +55,6 @@ export interface Config {
     select?: (key: cg.Key) => void; // called when a square is selected
     insert?: (elements: cg.Elements) => void; // when the board DOM has been (re)inserted
   };
-  drawable?: {
-    enabled?: boolean; // can draw
-    visible?: boolean; // can view
-    defaultSnapToValidMove?: boolean;
-    // false to keep the drawing if a movable piece is clicked.
-    // Clicking an empty square or immovable piece will clear the drawing regardless.
-    eraseOnClick?: boolean;
-    shapes?: DrawShape[];
-    autoShapes?: DrawShape[];
-    brushes?: DrawBrushes;
-    onChange?: (shapes: DrawShape[]) => void; // called after drawable shapes change
-  };
 }
 
 export function applyAnimation(state: HeadlessState, config: Config): void {
@@ -100,14 +68,12 @@ export function applyAnimation(state: HeadlessState, config: Config): void {
 export function configure(state: HeadlessState, config: Config): void {
   // don't merge destinations and autoShapes. Just override.
   if (config.movable?.dests) state.movable.dests = undefined;
-  if (config.drawable?.autoShapes) state.drawable.autoShapes = [];
 
   deepMerge(state, config);
 
   // if a fen was provided, replace the pieces
   if (config.fen) {
     state.pieces = fenRead(config.fen);
-    state.drawable.shapes = [];
   }
 
   // apply config values that could be undefined yet meaningful
@@ -123,21 +89,6 @@ export function configure(state: HeadlessState, config: Config): void {
 
   applyAnimation(state, config);
 
-  if (!state.movable.rookCastle && state.movable.dests) {
-    const rank = state.movable.color === 'white' ? '1' : '8',
-      kingStartPos = ('e' + rank) as cg.Key,
-      dests = state.movable.dests.get(kingStartPos),
-      king = state.pieces.get(kingStartPos);
-    if (!dests || !king || king.role !== 'king') return;
-    state.movable.dests.set(
-      kingStartPos,
-      dests.filter(
-        d =>
-          !(d === 'a' + rank && dests.includes(('c' + rank) as cg.Key)) &&
-          !(d === 'h' + rank && dests.includes(('g' + rank) as cg.Key))
-      )
-    );
-  }
 }
 
 function deepMerge(base: any, extend: any): void {
