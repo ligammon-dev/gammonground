@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { setCheck, setSelected } from './board.js';
+import { setSelected } from './board.js';
 import { read as fenRead } from './fen.js';
 import * as cg from './types.js';
 
@@ -7,10 +7,8 @@ export interface Config {
   fen?: cg.FEN; // chess position in Forsyth notation
   orientation?: cg.Color; // board orientation. white | black
   turnColor?: cg.Color; // turn to play. white | black
-  check?: cg.Color | boolean; // true for current color, false to unset
   lastMove?: cg.Key[]; // squares part of the last move ["c3", "c4"]
   selected?: cg.Key; // square currently selected "a1"
-  //coordinates?: boolean; // include coords attributes
   viewOnly?: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu?: boolean; // because who needs a context menu on a chessboard
   addPieceZIndex?: boolean; // adds z-index values to pieces (for 3D)
@@ -19,7 +17,6 @@ export interface Config {
   // pieceKey: boolean; // add a data-key attribute to piece elements
   highlight?: {
     lastMove?: boolean; // add last-move class to squares
-    check?: boolean; // add check class to squares
   };
   animation?: {
     enabled?: boolean;
@@ -77,7 +74,6 @@ export function configure(state: HeadlessState, config: Config): void {
   }
 
   // apply config values that could be undefined yet meaningful
-  if ('check' in config) setCheck(state, config.check || false);
   if ('lastMove' in config && !config.lastMove) state.lastMove = undefined;
   // in case of ZH drop last move, there's a single square.
   // if the previous last move had two squares,

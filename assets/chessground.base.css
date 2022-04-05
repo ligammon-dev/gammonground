@@ -28,11 +28,12 @@ cg-board {
 }
 
 cg-board square {
+  transform-origin: center;
   position: absolute;
   top: 0;
   left: 0;
-  width: 12.5%;
-  height: 12.5%;
+  width: 7.8%;
+  height: 7.8%;
   pointer-events: none;
 }
 
@@ -45,12 +46,13 @@ cg-board square.last-move {
 }
 
 .cg-wrap piece {
+  transform-origin: center;
   position: absolute;
   top: 0;
   left: 0;
-  width: 12.5%;
-  height: 12.5%;
-  background-size: cover;
+  width: 8%;
+  height: 8%;
+  /*background-size: cover;*/
   z-index: 2;
   will-change: transform;
   pointer-events: none;

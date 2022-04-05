@@ -1,6 +1,6 @@
 import * as cg from './types.js';
 
-export const x = 9;
+export const x = 13;
 export const invRanks: readonly cg.Rank[] = [...cg.ranks].reverse();
 
 export const allKeys: readonly cg.Key[] = Array.prototype.concat(...cg.files.map(c => cg.ranks.map(r => c + r)));

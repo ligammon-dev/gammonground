@@ -10,8 +10,8 @@
     <link rel="stylesheet" type="text/css" href="assets/chessground.cburnett.css">
     <style>
         #chessground {
-            width: 500px;
-            height: 500px;
+            width: 350px;
+            height: 350px;
         }
 
         cg-board {
@@ -22,8 +22,19 @@
     <script type="module">
         import { Chessground } from './chessground.js';
 
-        const config = {};
+        const config = {
+
+    
+    };
         const ground = Chessground(document.getElementById('chessground'), config);
+        ground.set({
+          turnColor: 'white',
+          movable: {
+            dests: new Map([
+              ['a3', ['a4', 'a5', 'a6']]
+            ])
+          }
+        });
     </script>
 </head>
 <body>

@@ -23,17 +23,6 @@ export function setPieces(state: HeadlessState, pieces: cg.PiecesDiff): void {
   }
 }
 
-export function setCheck(state: HeadlessState, color: cg.Color | boolean): void {
-  state.check = undefined;
-  if (color === true) color = state.turnColor;
-  if (color)
-    for (const [k, p] of state.pieces) {
-      if (p.role === 'king' && p.color === color) {
-        state.check = k;
-      }
-    }
-}
-
 export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piece | boolean {
   const origPiece = state.pieces.get(orig),
     destPiece = state.pieces.get(dest);
@@ -46,7 +35,6 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
     state.pieces.delete(orig);
   //}
   state.lastMove = [orig, dest];
-  state.check = undefined;
   callUserFunction(state.events.change);
   return captured || true;
 }
@@ -59,7 +47,6 @@ export function baseNewPiece(state: HeadlessState, piece: cg.Piece, key: cg.Key,
   callUserFunction(state.events.dropNewPiece, piece, key);
   state.pieces.set(key, piece);
   state.lastMove = [key];
-  state.check = undefined;
   callUserFunction(state.events.change);
   state.movable.dests = undefined;
   state.turnColor = opposite(state.turnColor);

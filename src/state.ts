@@ -8,10 +8,8 @@ export interface HeadlessState {
   pieces: cg.Pieces;
   orientation: cg.Color; // board orientation. white | black
   turnColor: cg.Color; // turn to play. white | black
-  check?: cg.Key; // square currently in check "a2"
   lastMove?: cg.Key[]; // squares part of the last move ["c3"; "c4"]
   selected?: cg.Key; // square currently selected "a1"
-  coordinates: boolean; // include coords attributes
   viewOnly: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu: boolean; // because who needs a context menu on a chessboard
   addPieceZIndex: boolean; // adds z-index values to pieces (for 3D)
@@ -20,7 +18,6 @@ export interface HeadlessState {
   pieceKey: boolean; // add a data-key attribute to piece elements
   highlight: {
     lastMove: boolean; // add last-move class to squares
-    check: boolean; // add check class to squares
   };
   animation: {
     enabled: boolean;
@@ -81,7 +78,6 @@ export function defaults(): HeadlessState {
     pieces: fen.read(fen.initial),
     orientation: 'white',
     turnColor: 'white',
-    coordinates: true,
     viewOnly: false,
     disableContextMenu: false,
     addPieceZIndex: false,
@@ -90,7 +86,6 @@ export function defaults(): HeadlessState {
     pieceKey: false,
     highlight: {
       lastMove: true,
-      check: true,
     },
     animation: {
       enabled: true,
