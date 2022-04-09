@@ -7,7 +7,7 @@ import * as events from './events.js';
 import { render, renderResized, updateBounds } from './render.js';
 import * as util from './util.js';
 
-export function Chessground(element: HTMLElement, config?: Config): Api {
+export function Gammonground(element: HTMLElement, config?: Config): Api {
   const maybeState: State | HeadlessState = defaults();
 
   configure(maybeState, config || {});

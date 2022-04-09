@@ -120,8 +120,10 @@ export function render(s: State): void {
   // walk over all pieces in current set, apply dom changes to moved pieces
   // or append new pieces
   for (const [k, p] of pieces) {
+
     anim = anims.get(k);
     if (!samePieces.has(k)) {
+      //console.log(key2pos(k));
       pMvdset = movedPieces.get(pieceNameOf(p));
       pMvd = pMvdset && pMvdset.pop();
       // a same piece was moved
@@ -161,6 +163,7 @@ export function render(s: State): void {
         if (s.addPieceZIndex) pieceNode.style.zIndex = posZIndex(pos, asWhite);
 
         boardEl.appendChild(pieceNode);
+
       }
     }
   }

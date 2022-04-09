@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chessground Demo</title>
+    <title>Gammonground Demo</title>
 
-    <link rel="stylesheet" type="text/css" href="assets/chessground.base.css">
-    <link rel="stylesheet" type="text/css" href="assets/chessground.brown.css">
-    <link rel="stylesheet" type="text/css" href="assets/chessground.cburnett.css">
+    <link rel="stylesheet" type="text/css" href="assets/gammonground.base.css">
+    <link rel="stylesheet" type="text/css" href="assets/gammonground.board.css">
+    <link rel="stylesheet" type="text/css" href="assets/gammonground.piece.css">
     <style>
-        #chessground {
+        #gammonground {
             width: 350px;
             height: 350px;
         }
@@ -20,24 +20,28 @@
     </style>
 
     <script type="module">
-        import { Chessground } from './chessground.js';
+        import { Gammonground } from './gammonground.js';
 
-        const config = {
-
-    
-    };
-        const ground = Chessground(document.getElementById('chessground'), config);
+        const config = {};
+        const ground = Gammonground(document.getElementById('gammonground'), config);
         ground.set({
+              highlight: {
+             lastMove: false, // add last-move class to squares
+            },
+            draggable: {
+                enabled:true,
+                showGhost: false,
+            },
           turnColor: 'white',
-          movable: {
-            dests: new Map([
-              ['a3', ['a4', 'a5', 'a6']]
-            ])
-          }
+          //movable: {
+          //  dests: new Map([
+          //    ['a2', ['f1','f2','f3','f4', 'f5', 'f6']]
+          //  ])
+          //}
         });
     </script>
 </head>
 <body>
-    <div id="chessground"></div>
+<div id="gammonground"></div>
 </body>
 </html>

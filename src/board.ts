@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { pos2key, key2pos, opposite, distanceSq, allPos, computeSquareCenter, x } from './util.js';
+import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x } from './util.js';
 import * as cg from './types.js';
 
 export function callUserFunction<T extends (...args: any[]) => void>(f: T | undefined, ...args: Parameters<T>): void {
@@ -128,6 +128,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
   const piece = state.pieces.get(orig);
   return (
     !!piece &&
+    piece.role == 'checker' &&
     (state.movable.color === 'both' || (state.movable.color === piece.color && state.turnColor === piece.color))
   );
 }
@@ -175,13 +176,13 @@ export function getKeyAtDomPos(pos: cg.NumberPair, asWhite: boolean, bounds: Cli
 }
 
 export function getSnappedKeyAtDomPos(
-  orig: cg.Key,
+  //orig: cg.Key,
   pos: cg.NumberPair,
   asWhite: boolean,
   bounds: ClientRect
 ): cg.Key | undefined {
-  const origPos = key2pos(orig);
-  console.log(origPos);
+  //const origPos = key2pos(orig);
+  //console.log(origPos);
   //const validSnapPos = allPos.filter(pos2 => {
   //  return queen(origPos[0], origPos[1], pos2[0], pos2[1]) || knight(origPos[0], origPos[1], pos2[0], pos2[1]);
   //});

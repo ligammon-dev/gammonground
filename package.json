@@ -1,10 +1,10 @@
 {
-  "name": "chessground",
-  "version": "8.2.1",
-  "description": "lichess.org chess ui",
+  "name": "gammonground",
+  "version": "0.0.1",
+  "description": "ligammon.org backgammon ui",
   "type": "module",
-  "module": "chessground.js",
-  "typings": "chessground.d.ts",
+  "module": "gammonground.js",
+  "typings": "gammonground.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-typescript": "^8",
@@ -33,19 +33,18 @@
     "/src/*.ts",
     "!/rollup.config.js"
   ],
-  "repository": "https://github.com/lichess-org/chessground",
+  "repository": "https://github.com/ligammon/gammonground",
   "keywords": [
-    "chess",
-    "lichess",
-    "lichess.org",
-    "chessboard",
+    "backgammon",
+    "ligammon",
+    "ligammon.org",
+    "gameboard",
     "ui",
     "typescript"
   ],
   "author": "Thibault Duplessis (https://github.com/ornicar)",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/lichess-org/chessground/issues"
-  },
-  "funding": "https://lichess.org/patron"
+    "url": "https://github.com/ligammon/gammonground/issues"
+  }
 }

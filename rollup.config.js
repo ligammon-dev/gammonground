@@ -5,14 +5,14 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/chessground.js',
+      file: 'dist/gammonground.js',
       format: 'iife',
-      name: 'Chessground',
+      name: 'Gammonground',
     },
     {
-      file: 'dist/chessground.min.js',
+      file: 'dist/gammonground.min.js',
       format: 'iife',
-      name: 'Chessground',
+      name: 'Gammonground',
       plugins: [
         terser(),
       ],

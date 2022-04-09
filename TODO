@@ -1,0 +1,20 @@
+Frontend todos:
+
+- Board jpg is large, create some svg which is smaller but still preserves bar/hinge details
+
+- Dice svg, doubling cube svg. Do these belong in gammonground, or elsewhere? 
+
+- Figure out what to do with /off pieces, need checker cubbies or something on one side of board.
+
+- Dice animation?
+
+- Checker with 6+ points, need to consider layering or a numbering system for pips and on the bar.
+
+- Checker - basic properties of checker should be implemented, no gaps on pip, capturing moves checker to bar, checker slides to bottom of board, etc. Actual backgammon logic belongs somewhere else. Fuzzy line here, eg some bg variations don't hit on single blots, need to consider rules.
+
+- Fix green square SVG for selected pieces, destination square. Should be round, like the checker.
+
+- Fix drop when using movable/dests, currently single dot on each square of pip, plus green square highlighted when hovering. Should be only 1 shape for the entire triangle, if possible. 
+
+- Since changing 8x8 -> 13x13 and modifying css files, checker "jumps" off the mouse pointer when clicking/dragging pieces. Need to investigate and get it centered.
+
