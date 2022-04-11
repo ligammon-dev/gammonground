@@ -93,3 +93,9 @@ export function computeSquareCenter(key: cg.Key, asWhite: boolean, bounds: Clien
     bounds.top + (bounds.height * (x-1 - pos[1])) / x + bounds.height / (x*2),
   ];
 }
+
+// 13x13 Backgammon specific functions
+export function isPip(key: cg.Key) {
+  const pos = key2pos(key);
+  return (pos[0] != 6 && pos[1] != 6);
+}

@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x } from './util.js';
+import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isPip } from './util.js';
 import * as cg from './types.js';
 
 export function callUserFunction<T extends (...args: any[]) => void>(f: T | undefined, ...args: Parameters<T>): void {
@@ -135,7 +135,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
 
 export function canMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   return (
-    orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest))
+    isPip(dest) && orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest))
   );
 }
 
@@ -182,7 +182,6 @@ export function getSnappedKeyAtDomPos(
   bounds: ClientRect
 ): cg.Key | undefined {
   //const origPos = key2pos(orig);
-  //console.log(origPos);
   //const validSnapPos = allPos.filter(pos2 => {
   //  return queen(origPos[0], origPos[1], pos2[0], pos2[1]) || knight(origPos[0], origPos[1], pos2[0], pos2[1]);
   //});
