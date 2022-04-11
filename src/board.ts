@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isPip } from './util.js';
+import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isPip, isSamePip } from './util.js';
 import * as cg from './types.js';
 
 export function callUserFunction<T extends (...args: any[]) => void>(f: T | undefined, ...args: Parameters<T>): void {
@@ -135,7 +135,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
 
 export function canMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   return (
-    isPip(dest) && orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest))
+    !isSamePip(orig, dest) && isPip(dest) && orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest))
   );
 }
 

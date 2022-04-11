@@ -99,3 +99,13 @@ export function isPip(key: cg.Key) {
   const pos = key2pos(key);
   return (pos[0] != 6 && pos[1] != 6);
 }
+
+export function isSamePip(orig: cg.Key, dest: cg.Key) {
+  const pos1 = key2pos(orig);
+  const pos2 = key2pos(dest);
+  return(
+    (pos1[0] == pos2[0]) &&
+    (pos1[1] - pos2[1] < 6) && 
+    (((pos1[1] / 7) >> 0) - ((pos2[1] / 7) >> 0) == 0)
+  );
+}
