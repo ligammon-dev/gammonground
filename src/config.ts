@@ -55,6 +55,7 @@ export interface Config {
 }
 
 export function applyAnimation(state: HeadlessState, config: Config): void {
+  return;
   if (config.animation) {
     deepMerge(state.animation, config.animation);
     // no need for such short animations

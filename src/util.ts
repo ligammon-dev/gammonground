@@ -95,12 +95,20 @@ export function computeSquareCenter(key: cg.Key, asWhite: boolean, bounds: Clien
 }
 
 // 13x13 Backgammon specific functions
-export function isPip(key: cg.Key) {
+
+
+export function isGammonLegal(orig: cg.Key, dest: cg.Key, pieces: cg.Pieces) {
+  return (isPip(dest) && !isSamePip(orig, dest) && !isOccupied(orig, dest, pieces));
+}
+
+
+function isPip(key: cg.Key) {
   const pos = key2pos(key);
   return (pos[0] != 6 && pos[1] != 6);
 }
 
-export function isSamePip(orig: cg.Key, dest: cg.Key) {
+// returns true if orig and dest share a triangle
+function isSamePip(orig: cg.Key, dest: cg.Key) {
   const pos1 = key2pos(orig);
   const pos2 = key2pos(dest);
   return(
@@ -108,4 +116,33 @@ export function isSamePip(orig: cg.Key, dest: cg.Key) {
     (pos1[1] - pos2[1] < 6) && 
     (((pos1[1] / 7) >> 0) - ((pos2[1] / 7) >> 0) == 0)
   );
+}
+
+// returns true if dest triangle has 1 or fewer of opponent's pieces
+function isOccupied(orig: cg.Key, dest: cg.Key, pieces: cg.Pieces) {
+  var count = getCount(dest, pieces);
+  return pieces.get(orig)?.color == "black" ? count > 1 : count < -1;
+}
+
+// returns number signifying how many checkers on destination
+// pip, with numbers less than 0 representing black
+// TODO make this in the style of chessground
+function getCount(dest: cg.Key, pieces: cg.Pieces) {
+  var count = 0;
+  const pos = key2pos(dest);
+  var nextPos = pos;
+  const start = ((pos[1]/7) >> 0)*12;
+  const incr = (pos[1]/7 >> 0) ? -1:1
+  for (var i = start; i!=6; i+=incr) {
+    nextPos[1] = i;
+    var p = pieces.get(pos2key(nextPos));
+    if (p) {
+      if (p.color == "black") {
+        count--;
+      } else {
+        count++;
+      }
+    }
+  }
+  return count;
 }

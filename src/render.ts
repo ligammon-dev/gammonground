@@ -43,6 +43,7 @@ export function render(s: State): void {
     if (isPieceNode(el)) {
       pieceAtKey = pieces.get(k);
       anim = anims.get(k);
+      //console.log("anim",anim);
       fading = fadings.get(k);
       elPieceName = el.cgPiece;
       // if piece not being dragged anymore, remove dragging style

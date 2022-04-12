@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isPip, isSamePip } from './util.js';
+import { samePiece, key2pos, pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isGammonLegal } from './util.js';
 import * as cg from './types.js';
 
 export function callUserFunction<T extends (...args: any[]) => void>(f: T | undefined, ...args: Parameters<T>): void {
@@ -24,17 +24,26 @@ export function setPieces(state: HeadlessState, pieces: cg.PiecesDiff): void {
 }
 
 export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piece | boolean {
+  console.log("baseMove");
   const origPiece = state.pieces.get(orig),
     destPiece = state.pieces.get(dest);
   if (orig === dest || !origPiece) return false;
   const captured = destPiece && destPiece.color !== origPiece.color ? destPiece : undefined;
+  //const captured = destPiece;
   if (dest === state.selected) unselect(state);
+
+
   callUserFunction(state.events.move, orig, dest, captured);
   //if (!tryAutoCastle(state, orig, dest)) {
     state.pieces.set(dest, origPiece);
     state.pieces.delete(orig);
   //}
+
   state.lastMove = [orig, dest];
+
+
+
+
   callUserFunction(state.events.change);
   return captured || true;
 }
@@ -55,16 +64,19 @@ export function baseNewPiece(state: HeadlessState, piece: cg.Piece, key: cg.Key,
 
 function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piece | boolean {
   const result = baseMove(state, orig, dest);
+   
   if (result) {
     state.movable.dests = undefined;
     state.turnColor = opposite(state.turnColor);
     state.animation.current = undefined;
   }
+
   return result;
 }
 
 export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   if (canMove(state, orig, dest)) {
+    //console.log("userMove");
     const result = baseUserMove(state, orig, dest);
     if (result) {
       const holdTime = state.hold.stop();
@@ -75,6 +87,39 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
       };
       if (result !== true) metadata.captured = result;
       callUserFunction(state.movable.events.after, orig, dest, metadata);
+
+
+      //TODO grab top piece only
+      const pos = key2pos(orig);
+      var nextPos = pos;
+      const incr = (pos[1]/7 >> 0) ? -1:1;
+      for (var i = pos[1]+incr; i!=6; i+=incr) {
+        nextPos[1] = i;
+        if (state.pieces.get(pos2key(nextPos))) {
+          baseUserMove(state, pos2key(nextPos), pos2key([nextPos[0], nextPos[1]-incr]));
+        } else {
+          break;
+        }
+      }
+
+      // TODO slide down
+      const pos2 = key2pos(dest);
+      const incr2 = (pos2[1]/7 >> 0) ? -1:1;
+      var nextPos2 = pos2;
+      var j = 0;
+      for (j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
+        nextPos2[1] = j;
+        var p = state.pieces.get(pos2key([nextPos2[0], nextPos2[1]-incr2]));
+        var p2 = state.pieces.get(dest);
+        console.log(j);
+        if (p2) {
+          if (!p || !samePiece(p,p2 )) {
+          } else {
+            break;
+          }
+        }
+      }
+      baseUserMove(state, dest, pos2key([nextPos2[0], j]));
       return true;
     }
   }
@@ -135,7 +180,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
 
 export function canMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   return (
-    !isSamePip(orig, dest) && isPip(dest) && orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest))
+    orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest)) && isGammonLegal(orig, dest, state.pieces)
   );
 }
 

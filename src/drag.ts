@@ -147,7 +147,24 @@ export function move(s: State, e: cg.MouchEvent): void {
 
 export function end(s: State, e: cg.MouchEvent): void {
   const cur = s.draggable.current;
-  if (!cur) return;
+  if (!cur) {
+    // TODO delete if clicked off screen
+    if (s.draggable.deleteOnDropOff && s.selected) {
+        const b = s.dom.bounds();
+        const epos = util.eventPosition(e);
+        if (epos) {
+          if (epos[0] < b.left || epos[0] > b.right || epos[1] < b.top || epos[1] > b.bottom) {
+            s.pieces.delete(s.selected);
+            board.callUserFunction(s.events.change)
+             board.unselect(s);
+            removeDragElements(s);
+            s.draggable.current = undefined;
+            s.dom.redraw();
+          }
+        }
+    }
+    return;
+  }
   // create no corresponding mouse event
   if (e.type === 'touchend' && e.cancelable !== false) e.preventDefault();
   // comparing with the origin target is an easy way to test that the end event
@@ -157,8 +174,11 @@ export function end(s: State, e: cg.MouchEvent): void {
     return;
   }
   // touchend has no position; so use the last touchmove position instead
+
   const eventPos = util.eventPosition(e) || cur.pos;
   const dest = board.getKeyAtDomPos(eventPos, board.whitePov(s), s.dom.bounds());
+
+  //const dest = board.getKeyAtDomPos(eventPos, board.whitePov(s), s.dom.bounds());
   if (dest && cur.started && cur.orig !== dest) {
     if (cur.newPiece) board.dropNewPiece(s, cur.orig, dest, cur.force);
     else {
