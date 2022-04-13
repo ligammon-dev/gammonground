@@ -75,7 +75,11 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
 }
 
 export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
+
+   
+
   if (canMove(state, orig, dest)) {
+    var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
     //console.log("userMove");
     const result = baseUserMove(state, orig, dest);
     if (result) {
@@ -89,7 +93,9 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
       callUserFunction(state.movable.events.after, orig, dest, metadata);
 
 
-      //TODO grab top piece only
+ //console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
+
+      //TODO grab orig top piece only
       const pos = key2pos(orig);
       var nextPos = pos;
       const incr = (pos[1]/7 >> 0) ? -1:1;
@@ -97,29 +103,48 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
         nextPos[1] = i;
         if (state.pieces.get(pos2key(nextPos))) {
           baseUserMove(state, pos2key(nextPos), pos2key([nextPos[0], nextPos[1]-incr]));
+          //baseUserMove(state, orig, pos2key([nextPos[0], nextPos[1]-incr]));
         } else {
           break;
         }
       }
 
-      // TODO slide down
+      // TODO slide dest up or down
       const pos2 = key2pos(dest);
       const incr2 = (pos2[1]/7 >> 0) ? -1:1;
       var nextPos2 = pos2;
       var j = 0;
-      for (j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
-        nextPos2[1] = j;
-        var p = state.pieces.get(pos2key([nextPos2[0], nextPos2[1]-incr2]));
-        var p2 = state.pieces.get(dest);
-        console.log(j);
-        if (p2) {
-          if (!p || !samePiece(p,p2 )) {
-          } else {
-            break;
+      var p2 = state.pieces.get(dest);
+
+      // console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
+      if (isSame) {
+         for (j = pos2[1]; j!=6; j+=incr2) {
+           //nextPos2[1] = j+incr;
+           if (state.pieces.get(pos2key([pos2[0],j+incr2]))) {
+             //console.log("PLEASESESEESE ",j)
+           } else {
+             break;
+           }
+          
+         }
+         //console.log("J", pos2[0], j+incr2);
+          baseUserMove(state, dest, pos2key([pos2[0], j+incr2]));
+      } else {
+
+        for (j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
+          nextPos2[1] = j;
+          var p = state.pieces.get(pos2key([nextPos2[0], nextPos2[1]-incr2]));
+          console.log(j);
+          if (p2) {
+            if (!p || !samePiece(p,p2 )) {
+            } else {
+              break;
+            }
           }
         }
+        baseUserMove(state, dest, pos2key([nextPos2[0], j]));
       }
-      baseUserMove(state, dest, pos2key([nextPos2[0], j]));
+    
       return true;
     }
   }
