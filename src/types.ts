@@ -1,5 +1,5 @@
 export type Color = typeof colors[number];
-export type Role = 'd1' | 'd2' | 'd3' | 'd4' | 'd5' | 'd6' | 'checker';
+export type Role = 'd1' | 'd2' | 'd3' | 'd4' | 'd5' | 'd6' | 'undo' | 'checker';
 export type File = typeof files[number];
 export type Rank = typeof ranks[number];
 export type Key = 'a0' | `${File}${Rank}`;

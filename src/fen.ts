@@ -5,6 +5,7 @@ export const initial: cg.FEN = 'board:somebody:gnubg:1:0:0:0:-2:0:0:0:0:5:0:3:0:
 
 const letters = {
   checker: 'c',
+  undo: 'u',
   d1: '1',
   d2: '2',
   d3: '3',

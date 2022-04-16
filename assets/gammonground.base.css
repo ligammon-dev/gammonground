@@ -32,8 +32,8 @@ cg-board square {
   position: absolute;
   top: 0;
   left: 0;
-  width: 7.8%;
-  height: 7.8%;
+  width: 7.55%;
+  height: 7.6%;
   pointer-events: none;
 }
 
@@ -43,6 +43,10 @@ cg-board square.move-dest {
 
 cg-board square.last-move {
   will-change: transform;
+}
+
+cg-board square.selected {
+ z-index: 2;
 }
 
 .cg-wrap piece {
@@ -77,7 +81,7 @@ piece.fading {
   opacity: 0.3;
 }
 
-.cg-wrap piece svg {
+/*.cg-wrap piece svg {
   overflow: hidden;
   position: relative;
   top: 0px;
@@ -113,18 +117,18 @@ piece.fading {
   overflow: hidden;
   opacity: 0.6;
   z-index: 2;
-}
+}*/
 
-.cg-wrap .cg-custom-svgs {
-  /* over piece.anim = 8, but under piece.dragging = 11 */
+/*.cg-wrap .cg-custom-svgs {
+ 
   z-index: 9;
 }
 
 .cg-wrap .cg-custom-svgs svg {
   overflow: visible;
 }
-
-.cg-wrap coords {
+*/
+/*.cg-wrap coords {
   position: absolute;
   display: flex;
   pointer-events: none;
@@ -171,3 +175,4 @@ piece.fading {
 .cg-wrap coords.ranks coord {
   transform: translateY(39%);
 }
+*/
