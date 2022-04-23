@@ -76,7 +76,7 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
   const result = baseMove(state, orig, dest);
    
   if (result) {
-    state.movable.dests = undefined;
+    state.movable.dests = undefined; 
     //state.turnColor = opposite(state.turnColor);
     state.animation.current = undefined;
   }
@@ -86,34 +86,31 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
 
 export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
 
-   
-
   if (canMove(state, orig, dest)) {
-    var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
 
-      // TODO slide dest up or down
-      const pos2 = key2pos(dest);
-      const incr2 = (pos2[1]/7 >> 0) ? -1:1;
-      var nextPos2 = pos2;
-      var j = 0;
-      var p2 = state.pieces.get(dest);
-var result;
-      // console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
-      if (isSame) {
-         for (j = pos2[1]; j!=6; j+=incr2) {
-           //nextPos2[1] = j+incr;
-           if (state.pieces.get(pos2key([pos2[0],j+incr2]))) {
-             //console.log("PLEASESESEESE ",j)
-           } else {
-             break;
-           }
-         }
-         //console.log("J", pos2[0], j+incr2);
-         result = baseUserMove(state, orig, pos2key([pos2[0], j+incr2]));
-      }  else {
-    //console.log("userMove");
-     result = baseUserMove(state, orig, dest);
+    var result;
+
+    // Gammonground
+    var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
+    const pos1 = key2pos(orig);
+    const pos2 = key2pos(dest);
+    const incr1 = pos1[1] > 6 ? -1:1;
+    const incr2 = pos2[1] > 6 ? -1:1;
+
+    if (isSame) {
+      // slide checkers dest up
+      for (var j = pos2[1]; j != 6 && state.pieces.get(pos2key([pos2[0],j+incr2])); j+=incr2);
+      if (j+incr2 == 6) {
+        // original move
+        result = baseUserMove(state, orig, dest);
+      } else {
+        result = baseUserMove(state, orig, pos2key([pos2[0], j+incr2]));
+      }
+    } else {
+      // The original move
+      result = baseUserMove(state, orig, dest);
     }
+
     if (result) {
       const holdTime = state.hold.stop();
       unselect(state);
@@ -124,45 +121,21 @@ var result;
       if (result !== true) metadata.captured = result;
       callUserFunction(state.movable.events.after, orig, dest, metadata);
 
+      // TODO grab checkers from top orig 
+      for (var i = pos1[1]+incr1; i!=6 && state.pieces.get(pos2key([pos1[0],i])); i+=incr1) {
+          baseUserMove(state, pos2key([pos1[0],i]), pos2key([pos1[0], i-incr1]));
+      }
 
- //console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
-
-      //TODO grab orig top piece only
-      const pos = key2pos(orig);
-      var nextPos = pos;
-      const incr = (pos[1]/7 >> 0) ? -1:1;
-      for (var i = pos[1]+incr; i!=6; i+=incr) {
-        nextPos[1] = i;
-        if (state.pieces.get(pos2key(nextPos))) {
-          baseUserMove(state, pos2key(nextPos), pos2key([nextPos[0], nextPos[1]-incr]));
-          //baseUserMove(state, orig, pos2key([nextPos[0], nextPos[1]-incr]));
-        } else {
+      // TODO slide successive checkers down to destination to fill gap
+      var p2 = state.pieces.get(dest);
+      for (var j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
+        var p = state.pieces.get(pos2key([pos2[0], j-incr2]));
+        if (p && p2 && samePiece(p,p2)) {
           break;
         }
       }
+      baseUserMove(state, dest, pos2key([pos2[0], j]));
 
-      // TODO slide dest up or down
-      const pos2 = key2pos(dest);
-      const incr2 = (pos2[1]/7 >> 0) ? -1:1;
-      var nextPos2 = pos2;
-      var j = 0;
-      var p2 = state.pieces.get(dest);
-
-      // console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
-      if (isSame) {
-      } else {
-        for (j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
-          nextPos2[1] = j;
-          var p = state.pieces.get(pos2key([nextPos2[0], nextPos2[1]-incr2]));
-          if (p2) {
-            if (!p || !samePiece(p,p2 )) {
-            } else {
-              break;
-            }
-          }
-        }
-        baseUserMove(state, dest, pos2key([nextPos2[0], j]));
-      }
       return true;
     }
   }
