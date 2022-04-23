@@ -96,11 +96,22 @@ export function computeSquareCenter(key: cg.Key, asWhite: boolean, bounds: Clien
 
 // 13x13 Backgammon specific functions
 
-
 export function isGammonLegal(orig: cg.Key, dest: cg.Key, pieces: cg.Pieces) {
   return (isPip(dest) && !isSamePip(orig, dest) && !isOccupied(orig, dest, pieces));
 }
 
+export function square2pip(square: cg.Key) {
+    //const x = square[0].charCodeAt() - 'a'.charCodeAt();
+    //const y = square[1].charCodeAt() - '0'.charCodeAt();
+    const xy = key2pos(square);
+    const x = xy[0];
+    const y = xy[1];
+    console.log("x, y: ", x, ",",y);
+    if (y >= 7) {
+        return (24-x) + (x/7>>0);
+    }
+    return (x+1) - (x/7>>0);
+}
 
 function isPip(key: cg.Key) {
   const pos = key2pos(key);
@@ -108,7 +119,7 @@ function isPip(key: cg.Key) {
 }
 
 // returns true if orig and dest share a triangle
-function isSamePip(orig: cg.Key, dest: cg.Key) {
+export function isSamePip(orig: cg.Key, dest: cg.Key) {
   const pos1 = key2pos(orig);
   const pos2 = key2pos(dest);
   return(
@@ -146,3 +157,4 @@ function getCount(dest: cg.Key, pieces: cg.Pieces) {
   }
   return count;
 }
+

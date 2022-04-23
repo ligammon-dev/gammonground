@@ -7,6 +7,11 @@
 
 }
 
+.cg-wrap piece.undo.black {
+ background-image: url('./undo.svg');
+
+}
+
 /** SVGs for backgammon die faces */
 .cg-wrap piece.d1.black {
  background-image: url('./d1_black.svg');

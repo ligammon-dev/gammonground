@@ -9,11 +9,20 @@
     <link rel="stylesheet" type="text/css" href="assets/gammonground.board.css">
     <link rel="stylesheet" type="text/css" href="assets/gammonground.piece.css">
     <style>
-        #gammonground {
-            width: 360px;
-            height: 360px;
+        /* Portrait */
+        @media screen and (orientation:portrait) {
+                #gammonground {
+                    width: 95vw;
+                    height: 95vw;
+                }
         }
-
+        /* Landscape */
+        @media screen and (orientation:landscape) {
+                #gammonground {
+                    width: 85vh;
+                    height: 85vh;
+                }
+        }
         cg-board {
             background-color: #bfcfdd;
         }
@@ -21,23 +30,17 @@
 
     <script type="module">
         import { Gammonground } from './gammonground.js';
-
         const config = {};
         const ground = Gammonground(document.getElementById('gammonground'), config);
         ground.set({
-              highlight: {
-             lastMove: false, // add last-move class to squares
+            highlight: {
+                lastMove: true, // add last-move class to squares
             },
             draggable: {
                 enabled:true,
                 showGhost: false,
             },
-          turnColor: 'white',
-          //movable: {
-          //  dests: new Map([
-          //    ['a2', ['f1','f2','f3','f4', 'f5', 'f6']]
-          //  ])
-          //}
+            turnColor: 'white',
         });
     </script>
 </head>

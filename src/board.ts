@@ -1,5 +1,5 @@
 import { HeadlessState } from './state.js';
-import { samePiece, key2pos, pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isGammonLegal } from './util.js';
+import { samePiece, key2pos, pos2key, opposite, distanceSq, allPos, computeSquareCenter, x, isGammonLegal, isSamePip, square2pip} from './util.js';
 import * as cg from './types.js';
 
 export function callUserFunction<T extends (...args: any[]) => void>(f: T | undefined, ...args: Parameters<T>): void {
@@ -13,6 +13,7 @@ export function toggleOrientation(state: HeadlessState): void {
 
 export function reset(state: HeadlessState): void {
   state.lastMove = undefined;
+  state.lastGammonMove = undefined;
   unselect(state);
 }
 
@@ -39,7 +40,13 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
     state.pieces.delete(orig);
   //}
 
-  state.lastMove = [orig, dest];
+  // don't register slid checkers
+  if (!isSamePip(orig, dest)) {
+    state.lastMove = [orig, dest];
+    state.lastGammonMove?.push(square2pip(orig) + '/' + square2pip(dest));
+    console.log(state.lastGammonMove, "floof");
+  }
+  //state.lastMove = [orig, dest];
 
 
 
@@ -56,9 +63,12 @@ export function baseNewPiece(state: HeadlessState, piece: cg.Piece, key: cg.Key,
   callUserFunction(state.events.dropNewPiece, piece, key);
   state.pieces.set(key, piece);
   state.lastMove = [key];
+  //state.lastGammonMove = [];
   callUserFunction(state.events.change);
   state.movable.dests = undefined;
-  state.turnColor = opposite(state.turnColor);
+
+
+  //state.turnColor = opposite(state.e);
   return true;
 }
 
@@ -67,7 +77,7 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
    
   if (result) {
     state.movable.dests = undefined;
-    state.turnColor = opposite(state.turnColor);
+    //state.turnColor = opposite(state.turnColor);
     state.animation.current = undefined;
   }
 
@@ -80,8 +90,30 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
 
   if (canMove(state, orig, dest)) {
     var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
+
+      // TODO slide dest up or down
+      const pos2 = key2pos(dest);
+      const incr2 = (pos2[1]/7 >> 0) ? -1:1;
+      var nextPos2 = pos2;
+      var j = 0;
+      var p2 = state.pieces.get(dest);
+var result;
+      // console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
+      if (isSame) {
+         for (j = pos2[1]; j!=6; j+=incr2) {
+           //nextPos2[1] = j+incr;
+           if (state.pieces.get(pos2key([pos2[0],j+incr2]))) {
+             //console.log("PLEASESESEESE ",j)
+           } else {
+             break;
+           }
+         }
+         //console.log("J", pos2[0], j+incr2);
+         result = baseUserMove(state, orig, pos2key([pos2[0], j+incr2]));
+      }  else {
     //console.log("userMove");
-    const result = baseUserMove(state, orig, dest);
+     result = baseUserMove(state, orig, dest);
+    }
     if (result) {
       const holdTime = state.hold.stop();
       unselect(state);
@@ -118,23 +150,10 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
 
       // console.log(state.pieces.get(orig)?.color, state.pieces.get(dest)?.color );
       if (isSame) {
-         for (j = pos2[1]; j!=6; j+=incr2) {
-           //nextPos2[1] = j+incr;
-           if (state.pieces.get(pos2key([pos2[0],j+incr2]))) {
-             //console.log("PLEASESESEESE ",j)
-           } else {
-             break;
-           }
-          
-         }
-         //console.log("J", pos2[0], j+incr2);
-          baseUserMove(state, dest, pos2key([pos2[0], j+incr2]));
       } else {
-
         for (j = pos2[1]; j!=((pos2[1]/7) >> 0)*12; j-=incr2) {
           nextPos2[1] = j;
           var p = state.pieces.get(pos2key([nextPos2[0], nextPos2[1]-incr2]));
-          console.log(j);
           if (p2) {
             if (!p || !samePiece(p,p2 )) {
             } else {
@@ -144,7 +163,6 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
         }
         baseUserMove(state, dest, pos2key([nextPos2[0], j]));
       }
-    
       return true;
     }
   }
@@ -223,8 +241,7 @@ export function isDraggable(state: HeadlessState, orig: cg.Key): boolean {
   return (
     !!piece &&
     state.draggable.enabled &&
-    (state.movable.color === 'both' )//||
-      //(state.movable.color === piece.color && (state.turnColor === piece.color || state.premovable.enabled)))
+    (state.movable.color === 'both' ) || (state.movable.color === piece?.color)// && (state.turnColor === piece.color || state.premovable.enabled)))
   );
 }
 

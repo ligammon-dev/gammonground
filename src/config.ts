@@ -7,7 +7,9 @@ export interface Config {
   fen?: cg.FEN; // chess position in Forsyth notation
   orientation?: cg.Color; // board orientation. white | black
   turnColor?: cg.Color; // turn to play. white | black
+  // TODO Gammon - lastMove contains up to 8 values (last 4 moves)
   lastMove?: cg.Key[]; // squares part of the last move ["c3", "c4"]
+  lastGammonMove?: String[];
   selected?: cg.Key; // square currently selected "a1"
   viewOnly?: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu?: boolean; // because who needs a context menu on a chessboard
@@ -55,7 +57,6 @@ export interface Config {
 }
 
 export function applyAnimation(state: HeadlessState, config: Config): void {
-  return;
   if (config.animation) {
     deepMerge(state.animation, config.animation);
     // no need for such short animations
@@ -66,7 +67,7 @@ export function applyAnimation(state: HeadlessState, config: Config): void {
 export function configure(state: HeadlessState, config: Config): void {
   // don't merge destinations and autoShapes. Just override.
   if (config.movable?.dests) state.movable.dests = undefined;
-
+  config.lastGammonMove = [];
   deepMerge(state, config);
 
   // if a fen was provided, replace the pieces

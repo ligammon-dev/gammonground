@@ -48,6 +48,9 @@ export function read(fen: cg.FEN): cg.Pieces {
     var x = turn > 0 ? 9 : 2
     pieces.set(pos2key([x,6]), {role: dice[my_string[33]], color:  turn > 0 ? 'black' : 'white',});
     pieces.set(pos2key([x+1,6]), {role: dice[my_string[34]], color:  turn > 0? 'black' : 'white',});
+    if (turn > 0) {
+      pieces.set(pos2key([12,6]), {role: 'undo', color: 'black'});
+    }
   }
   return pieces;
 }

@@ -9,6 +9,7 @@ export interface HeadlessState {
   orientation: cg.Color; // board orientation. white | black
   turnColor: cg.Color; // turn to play. white | black
   lastMove?: cg.Key[]; // squares part of the last move ["c3"; "c4"]
+  lastGammonMove?: String[];
   selected?: cg.Key; // square currently selected "a1"
   viewOnly: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu: boolean; // because who needs a context menu on a chessboard
