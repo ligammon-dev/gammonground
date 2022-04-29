@@ -37,6 +37,7 @@ export interface Elements {
   wrap: HTMLElement;
   container: HTMLElement;
   ghost?: HTMLElement;
+  customSvg?: SVGElement;
 }
 export interface Dom {
   elements: Elements;

@@ -10,6 +10,7 @@ export interface HeadlessState {
   turnColor: cg.Color; // turn to play. white | black
   lastMove?: cg.Key[]; // squares part of the last move ["c3"; "c4"]
   lastGammonMove?: String[];
+  checkerCounts?: number[];
   selected?: cg.Key; // square currently selected "a1"
   viewOnly: boolean; // don't bind events: the user will never be able to move pieces around
   disableContextMenu: boolean; // because who needs a context menu on a chessboard
@@ -77,6 +78,7 @@ export interface State extends HeadlessState {
 export function defaults(): HeadlessState {
   return {
     pieces: fen.read(fen.initial),
+    checkerCounts:  fen.readCounts(fen.initial),
     orientation: 'white',
     turnColor: 'white',
     viewOnly: false,

@@ -19,7 +19,7 @@ export function cancelDropMode(s: State): void {
 }
 
 export function drop(s: State, e: cg.MouchEvent): void {
-  console.log("drop");
+  //console.log("drop");
   if (!s.dropmode.active) return;
      
 

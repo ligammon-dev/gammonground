@@ -1,6 +1,6 @@
 import { HeadlessState } from './state.js';
 import { setSelected } from './board.js';
-import { read as fenRead } from './fen.js';
+import { read as fenRead, readCounts } from './fen.js';
 import * as cg from './types.js';
 
 export interface Config {
@@ -73,6 +73,7 @@ export function configure(state: HeadlessState, config: Config): void {
   // if a fen was provided, replace the pieces
   if (config.fen) {
     state.pieces = fenRead(config.fen);
+    state.checkerCounts = readCounts(config.fen);
   }
 
   // apply config values that could be undefined yet meaningful

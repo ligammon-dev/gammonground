@@ -68,6 +68,13 @@ export const setVisible = (el: HTMLElement, v: boolean): void => {
   el.style.visibility = v ? 'visible' : 'hidden';
 };
 
+export const setText = (el: HTMLElement | undefined): void => {
+  if (el) {
+    el.innerHTML = '1';
+  }
+};
+
+
 export const eventPosition = (e: cg.MouchEvent): cg.NumberPair | undefined => {
   if (e.clientX || e.clientX === 0) return [e.clientX, e.clientY!];
   if (e.targetTouches?.[0]) return [e.targetTouches[0].clientX, e.targetTouches[0].clientY];
@@ -106,7 +113,7 @@ export function square2pip(square: cg.Key) {
     const xy = key2pos(square);
     const x = xy[0];
     const y = xy[1];
-    console.log("x, y: ", x, ",",y);
+    //console.log("x, y: ", x, ",",y);
     if (y >= 7) {
         return (24-x) + (x/7>>0);
     }

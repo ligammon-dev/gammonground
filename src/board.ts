@@ -25,7 +25,6 @@ export function setPieces(state: HeadlessState, pieces: cg.PiecesDiff): void {
 }
 
 export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piece | boolean {
-  console.log("baseMove");
   const origPiece = state.pieces.get(orig),
     destPiece = state.pieces.get(dest);
   if (orig === dest || !origPiece) return false;
@@ -44,12 +43,9 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
   if (!isSamePip(orig, dest)) {
     state.lastMove = [orig, dest];
     state.lastGammonMove?.push(square2pip(orig) + '/' + square2pip(dest));
-    console.log(state.lastGammonMove, "floof");
+    //console.log(state.lastGammonMove, "floof");
   }
   //state.lastMove = [orig, dest];
-
-
-
 
   callUserFunction(state.events.change);
   return captured || true;
@@ -91,20 +87,27 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
     var result;
 
     // Gammonground
+    const clr = state.pieces.get(orig)?.color;
+    //console.log("color", state.pieces.get(orig)?.color);
     var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
     const pos1 = key2pos(orig);
     const pos2 = key2pos(dest);
     const incr1 = pos1[1] > 6 ? -1:1;
     const incr2 = pos2[1] > 6 ? -1:1;
-
+    var k = pos2[1];
+    var i = pos1[1]+incr1;
     if (isSame) {
       // slide checkers dest up
-      for (var j = pos2[1]; j != 6 && state.pieces.get(pos2key([pos2[0],j+incr2])); j+=incr2);
-      if (j+incr2 == 6) {
+      for (k = pos2[1]; k != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2);
+      if (k+incr2 == 6) {
         // original move
+        //console.log(state.dom);
+        //setText(state.pieces.get(dest));
+        //if (state.checkerCounts)
+          //state.checkerCounts[square2pip(pos2key(pos2))] += 1;
         result = baseUserMove(state, orig, dest);
       } else {
-        result = baseUserMove(state, orig, pos2key([pos2[0], j+incr2]));
+        result = baseUserMove(state, orig, pos2key([pos2[0], k+incr2]));
       }
     } else {
       // The original move
@@ -118,8 +121,11 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
         ctrlKey: state.stats.ctrlKey,
         holdTime,
       };
-      if (result !== true) metadata.captured = result;
+      if (result !== true) {
+        metadata.captured = result;
+      }
       callUserFunction(state.movable.events.after, orig, dest, metadata);
+
 
       // TODO grab checkers from top orig 
       for (var i = pos1[1]+incr1; i!=6 && state.pieces.get(pos2key([pos1[0],i])); i+=incr1) {
@@ -136,6 +142,34 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
       }
       baseUserMove(state, dest, pos2key([pos2[0], j]));
 
+      state.lastMove = [pos2key([pos1[0],i-incr1]), isSame ? pos2key([pos2[0], k+incr2==6?k:k+incr2]) :  pos2key([pos2[0], j])];
+
+      if (state.checkerCounts) {
+
+        let p1 = square2pip(pos2key(pos1))-1;
+        let p2 = square2pip(pos2key(pos2))-1;
+        let inc = clr == 'white' ? -1:1;
+
+        state.checkerCounts[p2+(p2/6>>0)-(p2/12>>0)] += inc;
+        // if captured
+        if ( state.checkerCounts[p2+(p2/6>>0)-(p2/12>>0)] == 0) {
+          state.pieces.set(pos2key([6, inc>0 ? 5:7]),  {role: 'checker', color: inc>0 ? 'white' : 'black',});
+          state.checkerCounts[inc>0 ? 6:19] -= inc;
+          state.checkerCounts[p2+(p2/6>>0)-(p2/12>>0)] = inc;
+        }
+        if (pos1[0] == 6) { // if origin is on bar
+          state.checkerCounts[inc>0 ? 19:6] -= inc;
+          if (Math.abs(state.checkerCounts[inc>0 ? 19:6]) > 0) {
+              state.pieces.set(pos2key([6, inc<0 ? 5:7]),  {role: 'checker', color: inc<0 ? 'white' : 'black',});
+          }
+        } else {
+
+          state.checkerCounts[p1+(p1/6>>0)-(p1/12>>0)] -= inc;
+          if (Math.abs(state.checkerCounts[p1+(p1/6>>0)-(p1/12>>0)]) > 5) {
+              state.pieces.set(pos2key([pos1[0],i-incr1]), {role: 'checker', color: inc<0 ? 'white' : 'black',})
+          }
+        }
+      }
       return true;
     }
   }

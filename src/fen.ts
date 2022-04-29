@@ -22,6 +22,34 @@ const dice: { [letter: string]: cg.Role } = {
   '5': 'd5',
   '6': 'd6',
 };
+
+export function readCounts(fen: cg.FEN): Array<number> {
+  if (fen === 'start') fen = initial;
+  //console.log("foo");
+  var my_string = fen.split(':');
+
+  const counts= new Array();
+
+
+  // for (let i = 0; i < 12; i++) {
+  //   if (i==6) r++;
+  //   let count = parseInt(my_string[i+7]);
+  //   let count2 = parseInt(my_string[23-i+7]);
+
+  //   r++;
+  // }
+    for (var i = 0; i < 24; i++) {
+      //counts.push(1);
+    if (i == 6 || i == 18) counts.push(0);
+    counts.push(parseInt(my_string[i+7]));
+
+  }
+
+
+  
+  return counts;
+}
+
 export function read(fen: cg.FEN): cg.Pieces {
   if (fen === 'start') fen = initial;
   const pieces: cg.Pieces = new Map();

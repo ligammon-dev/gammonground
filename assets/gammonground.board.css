@@ -24,7 +24,8 @@ cg-board square.premove-dest:hover {
   background: rgba(20, 30, 85, 0.2);
 }
 cg-board square.last-move {
-  background-color: rgba(155, 199, 0, 0.41);
+  /*background-color: rgba(155, 199, 0, 0.41);*/
+  background: radial-gradient(rgba(155, 199, 30, 0.41) 70%, #408520 0, rgba(0, 0, 0, 0.0) 0, rgba(0, 0, 0, 0) 0);
 }
 cg-board square.selected {
     background: radial-gradient(rgba(20, 200, 30, 0.6) 70%, #408520 0, rgba(0, 0, 0, 0.0) 0, rgba(0, 0, 0, 0) 0);
