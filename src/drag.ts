@@ -154,7 +154,13 @@ export function end(s: State, e: cg.MouchEvent): void {
         const epos = util.eventPosition(e);
         if (epos) {
           if (epos[0] < b.left || epos[0] > b.right || epos[1] < b.top || epos[1] > b.bottom) {
-            s.pieces.delete(s.selected);
+            //if (cur && cur.origin)
+           // console.log("GETSD ERE", s.selected);
+           if (s.movable?.dests?.get(s.selected)?.includes('a0')) {
+            board.userMove(s,s.selected, 'a0');
+          }
+
+            //s.pieces.delete(s.selected);
             board.callUserFunction(s.events.change)
              board.unselect(s);
             removeDragElements(s);
@@ -187,8 +193,10 @@ export function end(s: State, e: cg.MouchEvent): void {
     }
   } else if (cur.newPiece) {
     s.pieces.delete(cur.orig);
-  } else if (s.draggable.deleteOnDropOff && !dest) {
-    s.pieces.delete(cur.orig);
+  } else if (s.draggable.deleteOnDropOff && !dest &&  s.movable?.dests?.get(cur?.orig)?.includes('a0')) {
+
+      board.userMove(s,cur.orig, 'a0');
+    //s.pieces.delete(cur.orig);
     board.callUserFunction(s.events.change);
   }
   if ((cur.orig === cur.previouslySelected || cur.keyHasChanged) && (cur.orig === dest || !dest)) board.unselect(s);

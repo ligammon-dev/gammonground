@@ -1,7 +1,7 @@
 /** backgammon board image */
 cg-board {
   background-color: #f0d9b5;
-  background-image: url('./bgboard.jpg');
+  background-image: url('./b_v8.svg');
 }
 
 /** Interactive board square colors */

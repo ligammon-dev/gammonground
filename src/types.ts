@@ -1,8 +1,9 @@
 export type Color = typeof colors[number];
-export type Role = 'd1' | 'd2' | 'd3' | 'd4' | 'd5' | 'd6' | 'undo' | 'checker';
+export type Role = 'd1' | 'd2' | 'd3' | 'd4' | 'd5' | 'd6' | 
+        'undo' | 'double' | 'resign1' | 'resign2' | 'resign3' | 'checker';
 export type File = typeof files[number];
 export type Rank = typeof ranks[number];
-export type Key = 'a0' | `${File}${Rank}`;
+export type Key = 'a0' | 'a>' | `${File}${Rank}`;
 export type FEN = string;
 export type Pos = [number, number];
 export interface Piece {

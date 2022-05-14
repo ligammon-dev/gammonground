@@ -9,7 +9,14 @@
 
 .cg-wrap piece.undo.black {
  background-image: url('./undo.svg');
+}
 
+.cg-wrap piece.double.black {
+ background-image: url('./cube.png');
+}
+
+.cg-wrap piece.resign.black {
+ background-image: url('./resign.svg');
 }
 
 /** SVGs for backgammon die faces */

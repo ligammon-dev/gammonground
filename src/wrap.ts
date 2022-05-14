@@ -84,6 +84,10 @@ export function renderWrap(element: HTMLElement, s: HeadlessState): Elements {
 
 
   }
+  customSvg.appendChild(renderSvg([0,-6], '', board.getBoundingClientRect()));
+  customSvg.appendChild(renderSvg([0,8], '', board.getBoundingClientRect()));
+  customSvg.appendChild(renderSvg([6,1], '64', board.getBoundingClientRect()));
+
   
 
   let ghost: HTMLElement | undefined;

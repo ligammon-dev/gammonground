@@ -6,6 +6,10 @@ export const initial: cg.FEN = 'board:somebody:gnubg:1:0:0:0:-2:0:0:0:0:5:0:3:0:
 const letters = {
   checker: 'c',
   undo: 'u',
+  double: 'd',
+  resign1: 'r',
+  resign2: 's',
+  resign3: 't',
   d1: '1',
   d2: '2',
   d3: '3',
@@ -25,7 +29,6 @@ const dice: { [letter: string]: cg.Role } = {
 
 export function readCounts(fen: cg.FEN): Array<number> {
   if (fen === 'start') fen = initial;
-  //console.log("foo");
   var my_string = fen.split(':');
 
   const counts= new Array();
@@ -38,15 +41,19 @@ export function readCounts(fen: cg.FEN): Array<number> {
 
   //   r++;
   // }
-    for (var i = 0; i < 24; i++) {
+  for (var i = 0; i < 24; i++) {
       //counts.push(1);
-    if (i == 6 || i == 18) counts.push(0);
+    if (i == 6) {
+      counts.push(parseInt(my_string[6]));
+    } else if (i == 18) {
+      counts.push(parseInt(my_string[31]));
+    }
     counts.push(parseInt(my_string[i+7]));
 
   }
-
-
-  
+  counts.push(parseInt(my_string[45]));
+  counts.push(0-parseInt(my_string[46]));
+  counts.push(parseInt(my_string[37]));
   return counts;
 }
 
@@ -60,12 +67,12 @@ export function read(fen: cg.FEN): cg.Pieces {
     let count = parseInt(my_string[i+7]);
     let count2 = parseInt(my_string[23-i+7]);
     if (count != 0) {
-          for (var c = 0; c < Math.abs(count); c++) {
+          for (var c = 0; c < Math.min(Math.abs(count), 6); c++) {
             pieces.set(pos2key([r,c]), {role: 'checker', color: count>0 ? 'black' : 'white',});
           }
     }
     if (count2 != 0) {
-          for (var c = 0; c < Math.abs(count2); c++) {
+          for (var c = 0; c < Math.min(Math.abs(count2), 6); c++) {
             pieces.set(pos2key([r,12-c]), {role: 'checker', color: count2>0 ? 'black' : 'white',});
       }
     }
@@ -75,11 +82,44 @@ export function read(fen: cg.FEN): cg.Pieces {
   if (parseInt(my_string[33]) > 0) {
     var x = turn > 0 ? 9 : 2
     pieces.set(pos2key([x,6]), {role: dice[my_string[33]], color:  turn > 0 ? 'black' : 'white',});
+     //pieces.move(pos2key([x,6]), pos2key([x,8]));
     pieces.set(pos2key([x+1,6]), {role: dice[my_string[34]], color:  turn > 0? 'black' : 'white',});
     if (turn > 0) {
       pieces.set(pos2key([12,6]), {role: 'undo', color: 'black'});
     }
   }
+
+  //var cubeValue = parseInt(my_string[37]);
+  var iMayDouble = parseInt(my_string[38]);
+  var opponentMayDouble = parseInt(my_string[39]);
+  //var wasDoubled = parseInt(my_string[40]);
+  if (iMayDouble && opponentMayDouble) { // centered cube
+    //pieces.set(pos2key([6,6]), {role: 'double', color:  'black'});
+  } else if (iMayDouble) {
+    pieces.set(pos2key([6,0]), {role: 'double', color:  'black'});
+  } else if (opponentMayDouble) {
+    pieces.set(pos2key([6,12]), {role: 'double', color:  'black'});
+  }
+
+
+  // draw bar checkers
+  if (parseInt(my_string[31]) != 0) {
+    pieces.set(pos2key([6,7]), {role: 'checker', color: 'black'});
+  }
+
+  if (parseInt(my_string[6]) != 0) {
+     pieces.set(pos2key([6,5]), {role: 'checker', color: 'white'});
+  }
+
+  // draw off checkers
+  if (parseInt(my_string[46]) != 0) {
+    pieces.set('a>', {role: 'checker', color: 'white'});
+  }
+
+  if (parseInt(my_string[45]) != 0) {
+     pieces.set('a0', {role: 'checker', color: 'black'});
+  }
+
   return pieces;
 }
 

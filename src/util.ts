@@ -68,12 +68,6 @@ export const setVisible = (el: HTMLElement, v: boolean): void => {
   el.style.visibility = v ? 'visible' : 'hidden';
 };
 
-export const setText = (el: HTMLElement | undefined): void => {
-  if (el) {
-    el.innerHTML = '1';
-  }
-};
-
 
 export const eventPosition = (e: cg.MouchEvent): cg.NumberPair | undefined => {
   if (e.clientX || e.clientX === 0) return [e.clientX, e.clientY!];
@@ -130,6 +124,7 @@ export function isSamePip(orig: cg.Key, dest: cg.Key) {
   const pos1 = key2pos(orig);
   const pos2 = key2pos(dest);
   return(
+    !(dest == 'a0') &&
     (pos1[0] == pos2[0]) &&
     (pos1[1] - pos2[1] < 6) && 
     (((pos1[1] / 7) >> 0) - ((pos2[1] / 7) >> 0) == 0)

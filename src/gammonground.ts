@@ -92,19 +92,49 @@ export function renderSvg(pos: cg.Pos, customSvg: string, bounds: ClientRect): S
 
 export function renderCheckerCount(state: State, customSvg: SVGElement): void {
   //console.log(customSvgsEl.viewportElement?.children[1], bounds);
+   if (state.checkerCounts) {
   for (var i = 0; i < 26; i++) {
-    if (state.checkerCounts) {
-      if (Math.abs(state.checkerCounts[i]) > 6 || 
-        (Math.abs(state.checkerCounts[i]) > 1 && (i==6 || i == 19)))
-        {
+       if (Math.abs(state.checkerCounts[i]) > 6 || 
+         (Math.abs(state.checkerCounts[i]) > 1 && (i==6 || i == 19)))
+         {
         customSvg.replaceChild(renderSvg([i>12?12-(i%13):i%13,i>12?2:0], makeCheckerCount(state.checkerCounts[i]), state.dom.bounds()), customSvg.children[i+1] );
       //customSvg.replaceChild(renderSvg([i,0], makeCheckerCount(state.checkerCounts[i]), state.dom.bounds()), customSvg.children[i] );
       //customSvg.children[i].innerHTML = makeCheckerCount(state.checkerCounts[i]);
-      } else {
-        customSvg.children[i+1].innerHTML = '';
-      }
+       } else {
+         customSvg.children[i+1].innerHTML = '';
+       }
     }
+    // off checkers
+    if (Math.abs(state.checkerCounts[26]) > 1) {
+          customSvg.replaceChild(renderSvg([0,-6], makeCheckerCount(state.checkerCounts[26]), state.dom.bounds()), customSvg.children[27] );
+    } else {
+      customSvg.children[27].innerHTML = '';
+    }
+
+    if (Math.abs(state.checkerCounts[27]) > 1) {
+          customSvg.replaceChild(renderSvg([0,8], makeCheckerCount(state.checkerCounts[27]), state.dom.bounds()), customSvg.children[28] );
+    } else {
+      customSvg.children[28].innerHTML = '';
+    }
+    // cube
+  if (state.checkerCounts[28] > 1) {
+   // var pos = [6,1];
+    //console.log(state.pieces.get('g7'));
+    if (state.pieces.get('f7')){
+      customSvg.replaceChild(renderSvg([5,1], makeDoublingCube(state.checkerCounts[28]), state.dom.bounds()), customSvg.children[29]);
+    } else if (state.pieces.get('h7')) {
+       customSvg.replaceChild(renderSvg([7,1], makeDoublingCube(state.checkerCounts[28]), state.dom.bounds()), customSvg.children[29]);
+    } else if (state.pieces.get('g=')) {
+       customSvg.replaceChild(renderSvg([6,7], makeDoublingCube(state.checkerCounts[28]), state.dom.bounds()), customSvg.children[29]);
+    } else if (state.pieces.get('g1')) {
+       customSvg.replaceChild(renderSvg([6,-5], makeDoublingCube(state.checkerCounts[28]), state.dom.bounds()), customSvg.children[29]);
+    }
+  } else {
+    customSvg.children[29].innerHTML = '';
   }
+ 
+}
+  
     //console.log(state.checkerCounts, customSvg);
 
 }
@@ -112,5 +142,11 @@ export function renderCheckerCount(state: State, customSvg: SVGElement): void {
 function makeCheckerCount(count: number): string {
   const c =  (count < 0) ? 'black' : 'white';
   //console.log("numb", count, c);
-  return '<style> .white { font:  50px arial; fill: white; }  .black { font:  50px arial; fill: black; } </style> <text x="45" y="60" class="'+c+'">' + Math.abs(count) + '</text>';
+  return '<style> .white { font:  50px arial; fill: white; }  .black { font:  50px arial; fill: black; } </style> <text x="50" y="58" class="'+c+'">' + Math.abs(count) + '</text>';
+}
+
+function makeDoublingCube(count: number): string {
+  //const c =  (count < 0) ? 'black' : 'white';
+  //console.log("numb", count, c);
+  return '<style> .white { font:  50px arial; fill: white; }  .black { font:  50px courier; fill: black; } </style> <text x="50" y="58" class="black">' + count + '</text>';
 }

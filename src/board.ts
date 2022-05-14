@@ -42,8 +42,13 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
   // don't register slid checkers
   if (!isSamePip(orig, dest)) {
     state.lastMove = [orig, dest];
-    state.lastGammonMove?.push(square2pip(orig) + '/' + square2pip(dest));
-    //console.log(state.lastGammonMove, "floof");
+    if (orig.charAt(0) == 'g' ) {
+        state.lastGammonMove?.push('25/' + square2pip(dest));
+    } else if (dest == 'a0') {
+      state.lastGammonMove?.push(square2pip(orig) + '/0');
+    } else {
+      state.lastGammonMove?.push(square2pip(orig) + '/' + square2pip(dest));
+    }
   }
   //state.lastMove = [orig, dest];
 
@@ -81,14 +86,12 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
 }
 
 export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
-
   if (canMove(state, orig, dest)) {
 
     var result;
 
     // Gammonground
     const clr = state.pieces.get(orig)?.color;
-    //console.log("color", state.pieces.get(orig)?.color);
     var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
     const pos1 = key2pos(orig);
     const pos2 = key2pos(dest);
@@ -96,22 +99,27 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
     const incr2 = pos2[1] > 6 ? -1:1;
     var k = pos2[1];
     var i = pos1[1]+incr1;
-    if (isSame) {
-      // slide checkers dest up
-      for (k = pos2[1]; k != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2);
-      if (k+incr2 == 6) {
-        // original move
-        //console.log(state.dom);
-        //setText(state.pieces.get(dest));
-        //if (state.checkerCounts)
-          //state.checkerCounts[square2pip(pos2key(pos2))] += 1;
-        result = baseUserMove(state, orig, dest);
+    if (dest == 'a0') {
+       result = baseUserMove(state, orig, dest);
+     } else {
+      if (isSame) {
+        // slide checkers dest up
+        for (k = pos2[1]; (k+incr2) != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2) console.log("k",k);
+        console.log("k done ",k)
+        if (k+incr2 == 6) {
+          // original move
+          //console.log(state.dom);
+          //setText(state.pieces.get(dest));
+          //if (state.checkerCounts)
+            //state.checkerCounts[square2pip(pos2key(pos2))] += 1;
+          result = baseUserMove(state, orig, dest);
+        } else {
+          result = baseUserMove(state, orig, pos2key([pos2[0], k+incr2]));
+        }
       } else {
-        result = baseUserMove(state, orig, pos2key([pos2[0], k+incr2]));
+        // The original move
+        result = baseUserMove(state, orig, dest);
       }
-    } else {
-      // The original move
-      result = baseUserMove(state, orig, dest);
     }
 
     if (result) {
@@ -130,6 +138,24 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
       // TODO grab checkers from top orig 
       for (var i = pos1[1]+incr1; i!=6 && state.pieces.get(pos2key([pos1[0],i])); i+=incr1) {
           baseUserMove(state, pos2key([pos1[0],i]), pos2key([pos1[0], i-incr1]));
+      }
+
+      if (dest == 'a0' || dest == 'a>') {
+        if (state.checkerCounts) {
+          let inc = clr == 'white' ? -1:1;
+          let p1 = square2pip(pos2key(pos1))-1;
+
+          if (dest == 'a0') {
+            state.checkerCounts[26] += inc;
+          } else {
+            state.checkerCounts[27] += inc;
+          }
+          state.checkerCounts[p1+(p1/6>>0)-(p1/12>>0)] -= inc;
+          if (Math.abs(state.checkerCounts[p1+(p1/6>>0)-(p1/12>>0)]) > 5) {
+              state.pieces.set(pos2key([pos1[0],i-incr1]), {role: 'checker', color: inc<0 ? 'white' : 'black',})
+          }
+        }
+        return true;
       }
 
       // TODO slide successive checkers down to destination to fill gap
@@ -172,6 +198,8 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
       }
       return true;
     }
+  } else {
+    //console.log("not legal")
   }
   unselect(state);
   return false;
@@ -230,7 +258,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
 
 export function canMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   return (
-    orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest)) && isGammonLegal(orig, dest, state.pieces)
+    orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest) || dest == 'a0') && (isGammonLegal(orig, dest, state.pieces) || dest == 'a0')
   );
 }
 
