@@ -100,8 +100,7 @@ export function read(fen: cg.FEN): cg.Pieces {
   } else if (opponentMayDouble) {
     pieces.set(pos2key([6,12]), {role: 'double', color:  'black'});
   }
-
-
+ 
   // draw bar checkers
   if (parseInt(my_string[31]) != 0) {
     pieces.set(pos2key([6,7]), {role: 'checker', color: 'black'});

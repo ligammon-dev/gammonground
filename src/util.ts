@@ -160,3 +160,17 @@ function getCount(dest: cg.Key, pieces: cg.Pieces) {
   return count;
 }
 
+export function pip2square(pip: string) {
+  let pv = 24-parseInt(pip);
+  if (pv < 0) {
+    return "g6";
+  } else if (pv > 23) {
+    return "a>";
+  } else {
+    if (pv < 12) {
+      return pos2key([(pv) + (pv/6>>0), 0]);
+    } else {
+      return pos2key([(24-pv) + (((24-pv)/7)>>0)-1,12]);
+    }
+  }
+}

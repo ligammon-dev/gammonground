@@ -5,6 +5,7 @@ import { Config, configure, applyAnimation } from './config.js';
 import { anim, render } from './anim.js';
 import { cancel as dragCancel, dragNewPiece } from './drag.js';
 import * as cg from './types.js';
+import { pip2square } from './util.js';
 
 export interface Api {
   // reconfigure the instance. Accepts all config options, except for viewOnly & drawable.visible.
@@ -23,6 +24,9 @@ export interface Api {
 
   // perform a move programmatically
   move(orig: cg.Key, dest: cg.Key): void;
+
+  // perform a move programmatically
+  gammonMove(orig: string, dest: string): void;
 
   // add and/or remove arbitrary pieces on the board
   setPieces(pieces: cg.PiecesDiff): void;
@@ -87,6 +91,12 @@ export function start(state: State, redrawAll: cg.Redraw): Api {
 
     move(orig, dest): void {
       anim(state => board.baseMove(state, orig, dest), state);
+    },
+
+    gammonMove(orig, dest): void {
+      let fr = pip2square(orig);
+      let to = pip2square(dest);
+      anim(state => board.userMove(state, fr, to), state);
     },
 
     newPiece(piece, key): void {

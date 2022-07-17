@@ -99,13 +99,12 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
     const incr2 = pos2[1] > 6 ? -1:1;
     var k = pos2[1];
     var i = pos1[1]+incr1;
-    if (dest == 'a0') {
+    if (dest == 'a0' || dest == 'a>') {
        result = baseUserMove(state, orig, dest);
      } else {
       if (isSame) {
         // slide checkers dest up
-        for (k = pos2[1]; (k+incr2) != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2) console.log("k",k);
-        console.log("k done ",k)
+        for (k = pos2[1]; (k+incr2) != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2) ;
         if (k+incr2 == 6) {
           // original move
           //console.log(state.dom);
@@ -258,7 +257,7 @@ function isMovable(state: HeadlessState, orig: cg.Key): boolean {
 
 export function canMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   return (
-    orig !== dest && isMovable(state, orig) && (state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest) || dest == 'a0') && (isGammonLegal(orig, dest, state.pieces) || dest == 'a0')
+    orig !== dest && isMovable(state, orig) && (state.movable.color == 'white' || state.movable.free || !!state.movable.dests?.get(orig)?.includes(dest) || dest == 'a0') && (isGammonLegal(orig, dest, state.pieces) || dest == 'a0' || dest == 'a>')
   );
 }
 
