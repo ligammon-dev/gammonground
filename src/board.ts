@@ -42,9 +42,9 @@ export function baseMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.P
   // don't register slid checkers
   if (!isSamePip(orig, dest)) {
     state.lastMove = [orig, dest];
-    if (orig.charAt(0) == 'g' ) {
+    if (orig.charAt(0) === 'g' ) {
         state.lastGammonMove?.push('25/' + square2pip(dest));
-    } else if (dest == 'a0') {
+    } else if (dest === 'a0') {
       state.lastGammonMove?.push(square2pip(orig) + '/0');
     } else {
       state.lastGammonMove?.push(square2pip(orig) + '/' + square2pip(dest));
@@ -88,18 +88,18 @@ function baseUserMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): cg.Piec
 export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): boolean {
   if (canMove(state, orig, dest)) {
 
-    var result;
+    let result;
 
     // Gammonground
     const clr = state.pieces.get(orig)?.color;
-    var isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
+    const isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
     const pos1 = key2pos(orig);
     const pos2 = key2pos(dest);
     const incr1 = pos1[1] > 6 ? -1:1;
     const incr2 = pos2[1] > 6 ? -1:1;
     var k = pos2[1];
     var i = pos1[1]+incr1;
-    if (dest == 'a0' || dest == 'a>') {
+    if (dest === 'a0' || dest === 'a>') {
        result = baseUserMove(state, orig, dest);
      } else {
       if (isSame) {

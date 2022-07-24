@@ -94,8 +94,8 @@ export function start(state: State, redrawAll: cg.Redraw): Api {
     },
 
     gammonMove(orig, dest): void {
-      let fr = pip2square(orig);
-      let to = pip2square(dest);
+      const fr = pip2square(orig);
+      const to = pip2square(dest);
       anim(state => board.userMove(state, fr, to), state);
     },
 
