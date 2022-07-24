@@ -92,7 +92,7 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
 
     // Gammonground
     const clr = state.pieces.get(orig)?.color;
-    const isSame = state.pieces.get(orig)?.color == state.pieces.get(dest)?.color;
+    const isSame = state.pieces.get(orig)?.color === state.pieces.get(dest)?.color;
     const pos1 = key2pos(orig);
     const pos2 = key2pos(dest);
     const incr1 = pos1[1] > 6 ? -1:1;
@@ -104,8 +104,8 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
      } else {
       if (isSame) {
         // slide checkers dest up
-        for (k = pos2[1]; (k+incr2) != 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2) ;
-        if (k+incr2 == 6) {
+        for (k = pos2[1]; (k+incr2) !== 6 && state.pieces.get(pos2key([pos2[0],k+incr2])); k+=incr2) ;
+        if (k+incr2 === 6) {
           // original move
           //console.log(state.dom);
           //setText(state.pieces.get(dest));
@@ -135,13 +135,13 @@ export function userMove(state: HeadlessState, orig: cg.Key, dest: cg.Key): bool
 
 
       // TODO grab checkers from top orig 
-      for (var i = pos1[1]+incr1; i!=6 && state.pieces.get(pos2key([pos1[0],i])); i+=incr1) {
-          baseUserMove(state, pos2key([pos1[0],i]), pos2key([pos1[0], i-incr1]));
+      for (var ii = pos1[1]+incr1; ii !== 6 && state.pieces.get(pos2key([pos1[0],ii])); ii+=incr1) {
+          baseUserMove(state, pos2key([pos1[0],ii]), pos2key([pos1[0], ii-incr1]));
       }
 
-      if (dest == 'a0' || dest == 'a>') {
+      if (dest === 'a0' || dest === 'a>') {
         if (state.checkerCounts) {
-          let inc = clr == 'white' ? -1:1;
+          const inc = clr == 'white' ? -1:1;
           let p1 = square2pip(pos2key(pos1))-1;
 
           if (dest == 'a0') {
